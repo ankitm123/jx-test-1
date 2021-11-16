@@ -11,7 +11,7 @@ spec:
       taskSpec:
         metadata: {}
         stepTemplate:
-          image: uses:jenkins-x/jx3-pipeline-catalog/tasks/go/pullrequest.yaml@versionStream
+          image: uses:jenkins-x/jx3-pipeline-catalog/tasks/go/pullrequest.yaml@61c051f60b2bdaa5f024e309b9892e72fb7273b4
           name: ""
           resources:
             requests:
@@ -24,14 +24,15 @@ spec:
           resources: {}
         - name: jx-variables
           resources: {}
-        - name: build-make-linux
+        - image: gcr.io/kaniko-project/executor:v1.6.0-debug
+          name: build-container-build
           resources: {}
-        - name: check-registry
-          resources: {}
-        - name: build-container-build
-          resources: {}
-        - name: promote-jx-preview
-          resources: {}
+          script: |
+            #!/busybox/sh
+            source .jx/variables.sh
+            cp /tekton/creds-secrets/tekton-container-registry-auth/.dockerconfigjson /kaniko/.docker/config.json
+            echo $PATH
+            ls -altr /kaniko
   podTemplate: {}
   serviceAccountName: tekton-bot
   timeout: 12h0m0s
